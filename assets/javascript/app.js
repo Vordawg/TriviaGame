@@ -57,20 +57,12 @@ function setupQuestionsAnswers() {
     var choice4;
     var answer;
 
-    question = 'In the first episode of "Thundercats" the cats travel from their destroyed home planet to 3rd Earth.' + "What was the name of the Thundercat's home planet?";
+    question = 'In the first episode of "Thundercats" the cats travel from their destroyed home planet to 3rd Earth.' + "  What was the name of the Thundercat's home planet?";
     choice1 = "Thundorea";
     choice2 = "Thunderia";
     choice3 = "Thundera";
     choice4 = "Thunderopolis";
     answer = choice3;
-    stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
-
-    question = 'Everyone knows that Gummiberry juice made the bears in "Gummi Bears" bounce around, but what happened when a human drank the juice?';
-    choice1 = "It made them incredibly fast";
-    choice2 = "It gave them incredible strength";
-    choice3 = "They became extremely agile and could jump huge distances";
-    choice4 = "They became drowsy and would fall asleep";
-    answer = choice2;
     stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
 
     question = "Bebop and Rocksteady were characters in which cartoon?";
@@ -81,7 +73,7 @@ function setupQuestionsAnswers() {
     answer = choice4;
     stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
 
-    question = "Both He-Man and Skeletor had feline companions which they used as a mode of transportation. He-Man's faithful feline companion was Battle Cat... what was the name of Skeletor's counterpart?";
+    question = "Both He-Man and Skeletor had feline companions which they used as a mode of transportation. He-Man's faithful feline companion was Battle Cat. What was the name of Skeletor's counterpart?";
     choice1 = "Panthor";
     choice2 = "Trap-Jaw";
     choice3 = "Tri-Klops";
@@ -113,6 +105,14 @@ function setupQuestionsAnswers() {
     answer = choice3;
     stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
 
+    question = "Which of the following is not a Thundercat?";
+    choice1 = "Panthro";
+    choice2 = "Slithe";
+    choice3 = "Tygra";
+    choice4 = "Jaga";
+    answer = choice2;
+    stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
+
     question = "What was the name of JEM's band?";
     choice1 = "The Holograms";
     choice2 = "The Pussy-Cats";
@@ -138,13 +138,16 @@ function setupQuestionsAnswers() {
     stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer);
 }
 
-
 function initGame() {
     correctAnswers = 0;
     wrongAnswers = 0;
     unanswered = 0;
     isClockRunning = false;
     questionNumber = -1;
+    clearQuestionAnswers();
+    resetStatus();
+    resetClock();
+    $("#startGame").text("");
 }
 
 function startTimer() {
@@ -159,10 +162,19 @@ function stopTimer() {
     isClockRunning = false;
 }
 
+function setClockDisplay() {
+
+    var displayText = "Time Remaining: " + timer + " Second";
+    if (timer != 1) {
+        displayText += "s";
+    }
+    $("#timeRemaining").text(displayText);
+}
+
 function countDown() {
     timer--;
 
-    $("#timeRemaining").text(timer);
+    setClockDisplay();
 
     if (timer == 0) {
         stopTimer();
@@ -172,7 +184,7 @@ function countDown() {
 
 function resetClock() {
     timer = 30;
-    $("#timeRemaining").text(timer);
+    setClockDisplay();
 }
 
 function clearQuestionAnswers() {
@@ -198,7 +210,6 @@ function getNextQuestion() {
     resetStatus();
 
     questionNumber++;
-    console.log(questionNumber);
 
     if (questionNumber < questionAnswers.length) {
         $("#question").text(questionAnswers[questionNumber].question);
@@ -210,15 +221,36 @@ function getNextQuestion() {
         startTimer();
     }
     else {
-        //end game
+        endOfGame();
     }
+}
+
+function startGame() {
+    $("#startGame").hide();
+    initGame();
+    getNextQuestion();
+}
+
+function endOfGame() {
+
+    $("#question").text("All done, here's how you did!");
+
+    var $finalScore = $('<div>');
+
+    $finalScore.append("<div>Correct Answers: " + correctAnswers + "</div>");
+    $finalScore.append("<div>Incorrect Answers: " + wrongAnswers + "</div>");
+    $finalScore.append("<div>Unanswered: " + unanswered + "</div>");
+
+
+    $("#answerReveal").prepend($finalScore);
+    showStart("Start Over?");
 }
 
 function checkAnswer() {
     stopTimer();
 
-    var myId = "#" + this.id;
-    var userAnswer = $(myId).html();
+    var answerId = "#" + this.id;
+    var userAnswer = $(answerId).html();
 
     console.log(userAnswer);
 
@@ -236,12 +268,17 @@ function checkAnswer() {
     setTimeout(getNextQuestion, 10000);
 }
 
+function showStart(input) {
+    $("#startGame").text(input);
+    $("#startGame").show();
+}
+
+$(".answers").on("click", checkAnswer);
+
+$("#startGame").on("click", startGame);
+
 window.onload = function () {
     setupQuestionsAnswers();
-
-    initGame();
-    getNextQuestion();
-
-    $(".answers").on("click", checkAnswer);
+    showStart("Start");
 };
 
