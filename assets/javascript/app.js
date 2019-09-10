@@ -151,7 +151,7 @@ function setupQuestionsAnswers() {
     choice3 = "Cliff";
     choice4 = "Jeff";
     answer = choice2;
-    image = "";
+    image = "sven.jpg";
     stageQuestionsAnswers(question, choice1, choice2, choice3, choice4, answer, image);
 }
 
